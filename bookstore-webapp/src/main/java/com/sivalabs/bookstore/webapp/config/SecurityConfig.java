@@ -1,5 +1,6 @@
 package com.sivalabs.bookstore.webapp.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -16,9 +17,17 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @EnableWebSecurity
 class SecurityConfig {
     private final ClientRegistrationRepository clientRegistrationRepository;
+    private final String clientId;
+    private final String logoutUrl;
 
-    SecurityConfig(ClientRegistrationRepository clientRegistrationRepository) {
+    SecurityConfig(
+            ClientRegistrationRepository clientRegistrationRepository,
+            @Value("${spring.security.oauth2.client.registration.bookstore-webapp.client-id}") String clientId,
+            @Value("${cognito.logoutUrl}") String logoutUrl) {
         this.clientRegistrationRepository = clientRegistrationRepository;
+        System.out.println("clientId: " + clientId);
+        this.clientId = clientId;
+        this.logoutUrl = logoutUrl;
     }
 
     @Bean
@@ -39,9 +48,7 @@ class SecurityConfig {
                 .cors(CorsConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
                 .oauth2Login(Customizer.withDefaults())
-                .logout(logout -> logout.clearAuthentication(true)
-                        .invalidateHttpSession(true)
-                        .logoutSuccessHandler(oidcLogoutSuccessHandler()));
+                .logout(logout -> logout.logoutSuccessHandler(new CognitoLogoutHandler(logoutUrl, clientId)));
         return http.build();
     }
 

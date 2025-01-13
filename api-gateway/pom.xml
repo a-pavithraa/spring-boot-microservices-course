@@ -20,7 +20,7 @@
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <springdoc-openapi.version>2.5.0</springdoc-openapi.version>
         <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
-        <dockerImageName>sivaprasadreddy/bookstore-${project.artifactId}</dockerImageName>
+        <dockerImageName>pavithravasudevan/bookstore-${project.artifactId}</dockerImageName>
     </properties>
     <dependencies>
         <dependency>

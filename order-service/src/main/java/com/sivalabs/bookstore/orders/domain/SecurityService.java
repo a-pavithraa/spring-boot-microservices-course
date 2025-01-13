@@ -13,6 +13,7 @@ public class SecurityService {
         JwtAuthenticationToken authentication =
                 (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         Jwt jwt = (Jwt) authentication.getPrincipal();
+        jwt.getClaims().entrySet().forEach(System.out::println);
         /*
         var username = jwt.getClaimAsString("preferred_username");
         var email = jwt.getClaimAsString("email");
@@ -20,6 +21,6 @@ public class SecurityService {
         var token = jwt.getTokenValue();
         var authorities = authentication.getAuthorities();
         */
-        return jwt.getClaimAsString("preferred_username");
+        return jwt.getClaimAsString("username");
     }
 }
