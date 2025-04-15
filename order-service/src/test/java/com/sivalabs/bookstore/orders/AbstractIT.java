@@ -11,6 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.keycloak.OAuth2Constants;
@@ -23,12 +28,21 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import org.testcontainers.utility.DockerImageName;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -49,7 +63,9 @@ public abstract class AbstractIT {
     @Autowired
     protected MockMvc mockMvc;
 
-    static WireMockContainer wiremockServer = new WireMockContainer("wiremock/wiremock:3.5.2-alpine");
+    static WireMockContainer wiremockServer = new WireMockContainer("wiremock/wiremock:latest");
+
+
 
     @BeforeAll
     static void beforeAll() {
@@ -83,27 +99,5 @@ public abstract class AbstractIT {
                                         .formatted(code, name, price.doubleValue()))));
     }
 
-    protected String getToken() {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.put(OAuth2Constants.GRANT_TYPE, singletonList(OAuth2Constants.PASSWORD));
-        map.put(OAuth2Constants.CLIENT_ID, singletonList(CLIENT_ID));
-        map.put(OAuth2Constants.CLIENT_SECRET, singletonList(CLIENT_SECRET));
-        map.put(OAuth2Constants.USERNAME, singletonList(USERNAME));
-        map.put(OAuth2Constants.PASSWORD, singletonList(PASSWORD));
-
-        String authServerUrl =
-                oAuth2ResourceServerProperties.getJwt().getIssuerUri() + "/protocol/openid-connect/token";
-
-        var request = new HttpEntity<>(map, httpHeaders);
-        KeyCloakToken token = restTemplate.postForObject(authServerUrl, request, KeyCloakToken.class);
-
-        assert token != null;
-        return token.accessToken();
-    }
-
-    record KeyCloakToken(@JsonProperty("access_token") String accessToken) {}
 }
