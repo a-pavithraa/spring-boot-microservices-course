@@ -2,8 +2,7 @@ name: BookStore Webapp
 
 on:
   push:
-    paths:
-      - bookstore-webapp/**
+
     branches:
       - '**'
 
