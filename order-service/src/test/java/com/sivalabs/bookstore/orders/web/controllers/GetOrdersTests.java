@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.sivalabs.bookstore.orders.AbstractIT;
 import com.sivalabs.bookstore.orders.WithCognitoMockUser;
-import com.sivalabs.bookstore.orders.WithMockOAuth2User;
 import org.junit.jupiter.api.Test;
 
 class GetOrdersTests extends AbstractIT {
