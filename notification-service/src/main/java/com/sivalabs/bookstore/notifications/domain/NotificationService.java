@@ -5,22 +5,19 @@ import com.sivalabs.bookstore.notifications.domain.models.OrderCancelledEvent;
 import com.sivalabs.bookstore.notifications.domain.models.OrderCreatedEvent;
 import com.sivalabs.bookstore.notifications.domain.models.OrderDeliveredEvent;
 import com.sivalabs.bookstore.notifications.domain.models.OrderErrorEvent;
-import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationService {
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
 
-    private final JavaMailSender emailSender;
+    private final EmailService emailService;
     private final ApplicationProperties properties;
 
-    public NotificationService(JavaMailSender emailSender, ApplicationProperties properties) {
-        this.emailSender = emailSender;
+    public NotificationService(EmailService emailService, ApplicationProperties properties) {
+        this.emailService = emailService;
         this.properties = properties;
     }
 
@@ -99,17 +96,6 @@ public class NotificationService {
     }
 
     private void sendEmail(String recipient, String subject, String content) {
-        try {
-            MimeMessage mimeMessage = emailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            helper.setFrom(properties.supportEmail());
-            helper.setTo(recipient);
-            helper.setSubject(subject);
-            helper.setText(content);
-            emailSender.send(mimeMessage);
-            log.info("Email sent to: {}", recipient);
-        } catch (Exception e) {
-            throw new RuntimeException("Error while sending email", e);
-        }
+        emailService.sendEmail(recipient, subject, content);
     }
 }
