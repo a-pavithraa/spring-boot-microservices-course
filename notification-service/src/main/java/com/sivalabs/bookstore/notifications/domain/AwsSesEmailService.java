@@ -29,8 +29,8 @@ public class AwsSesEmailService implements EmailService {
     @Override
     public void sendEmail(String recipient, String subject, String content) {
         try {
-            System.out.println("RECIPIENT: " + recipient);
-            System.out.println("Support Email: " + properties.supportEmail());
+            log.info("RECIPIENT: {}" ,recipient);
+           log.info("Support Email: {}" , properties.supportEmail());
             SendEmailRequest request = SendEmailRequest.builder()
                     .source(properties.supportEmail())
                     .destination(Destination.builder().toAddresses(recipient).build())
@@ -45,7 +45,7 @@ public class AwsSesEmailService implements EmailService {
             SendEmailResponse response = sesClient.sendEmail(request);
             log.info("Email sent to: {} with message ID: {}", recipient, response.messageId());
         } catch (Exception e) {
-            log.error("Error while sending email via AWS SES", e);
+            log.error("Error while sending email via AWS SES after adding some loggers", e);
             throw new RuntimeException("Error while sending email via AWS SES", e);
         }
     }
