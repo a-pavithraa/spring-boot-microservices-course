@@ -29,6 +29,8 @@ public class AwsSesEmailService implements EmailService {
     @Override
     public void sendEmail(String recipient, String subject, String content) {
         try {
+            System.out.println("RECIPIENT: " + recipient);
+            System.out.println("Support Email: " + properties.supportEmail());
             SendEmailRequest request = SendEmailRequest.builder()
                     .source(properties.supportEmail())
                     .destination(Destination.builder().toAddresses(recipient).build())
